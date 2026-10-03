@@ -49,11 +49,11 @@ export const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
   // Romantic handwritten captions for polaroid
   const captions = [
     {
-      title: `${herName} ✨`,
+      title: `My Heart 💗`,
       note: 'The one who brings warmth and light to every day',
     },
     {
-      title: `Me and Ente Forever! ❤️`,
+      title: `Me and Ente Forever! 💖`,
       note: 'With you, always and forever',
     },
     {

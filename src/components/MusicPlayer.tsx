@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Volume2, VolumeX } from 'lucide-react';
-import { startRomanticMelody, stopRomanticMelody } from '../utils/romanticMelody';
 
 interface MusicPlayerProps {
   musicUrl?: string;
@@ -32,13 +31,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
-    audio.addEventListener('error', () => {
-      // If MP3 file fails, fallback to gentle synth
-      if (!userPausedRef.current) {
-        startRomanticMelody();
-        setIsPlaying(true);
-      }
-    });
 
     audioRef.current = audio;
 
@@ -86,7 +78,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
         audio.pause();
         audio.muted = true;
         audio.src = '';
-        stopRomanticMelody();
       };
     }
 
@@ -96,7 +87,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
       audio.pause();
       audio.muted = true;
       audio.src = '';
-      stopRomanticMelody();
     };
   }, [musicUrl, autoPlay]);
 
@@ -113,7 +103,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
         audioRef.current.pause();
         audioRef.current.muted = true;
       }
-      stopRomanticMelody();
       setIsPlaying(false);
     } else {
       // UNMUTE / RESUME
@@ -126,15 +115,8 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             .then(() => {
               setIsPlaying(true);
             })
-            .catch(() => {
-              // Fallback to synthesizer if audio fails
-              startRomanticMelody();
-              setIsPlaying(true);
-            });
+            .catch(() => {});
         }
-      } else {
-        startRomanticMelody();
-        setIsPlaying(true);
       }
     }
   };

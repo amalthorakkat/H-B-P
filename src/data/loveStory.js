@@ -1,4 +1,4 @@
-import photo1 from '../assets/IMG-20260614-WA0041.jpg';
+import photo1 from '../assets/pup.jpeg';
 import photo2 from '../assets/IMG-20260626-WA0110.jpg';
 import songUrl from '../assets/new-west-those-eyes-lyrics-dan-music-128k_5g6Y9pt4.mp3';
 
