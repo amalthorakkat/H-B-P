@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Volume2, VolumeX, Music } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 import { startRomanticMelody, stopRomanticMelody } from '../utils/romanticMelody';
 
 interface MusicPlayerProps {
@@ -153,26 +153,21 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             data-music-toggle="true"
             onClick={toggleMusic}
             type="button"
-            aria-label={isPlaying ? 'Pause romantic music' : 'Play romantic music'}
-            className="group relative flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/80 hover:bg-white backdrop-blur-md border border-rose-100/80 shadow-xs hover:shadow-md transition-all duration-300 text-stone-600 hover:text-rose-700"
+            aria-label={isPlaying ? 'Mute music' : 'Play music'}
+            className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white backdrop-blur-md border border-rose-100/90 shadow-xs hover:shadow-md transition-all duration-300 text-stone-600 hover:text-rose-700 cursor-pointer"
           >
             {/* Pulsing indicator ring when playing */}
             {isPlaying && (
-              <span className="absolute -inset-0.5 rounded-full bg-rose-300/30 animate-ping opacity-75" />
+              <span className="absolute -inset-0.5 rounded-full bg-rose-300/30 animate-ping opacity-75 pointer-events-none" />
             )}
 
-            <div className="relative flex items-center justify-center w-6 h-6 rounded-full bg-rose-50 text-rose-500 group-hover:bg-rose-100 transition-colors">
+            <div className="relative flex items-center justify-center w-7 h-7 rounded-full bg-rose-50 text-rose-500 group-hover:bg-rose-100 transition-colors">
               {isPlaying ? (
-                <Volume2 className="w-3.5 h-3.5 animate-pulse text-rose-600" />
+                <Volume2 className="w-4 h-4 animate-pulse text-rose-600" />
               ) : (
-                <VolumeX className="w-3.5 h-3.5 text-stone-400 group-hover:text-rose-400" />
+                <VolumeX className="w-4 h-4 text-stone-400 group-hover:text-rose-400" />
               )}
             </div>
-
-            <span className="text-xs font-medium tracking-wide text-stone-600 group-hover:text-stone-800 transition-colors hidden sm:inline-block">
-              {isPlaying ? 'Our Song 🎵' : 'Play Music'}
-            </span>
-            <Music className="w-3 h-3 text-rose-400 hidden xs:inline-block sm:hidden" />
           </button>
         </motion.div>
       )}
