@@ -15,7 +15,6 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
   visible = true,
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [useSynthesizer, setUseSynthesizer] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const userPausedRef = useRef<boolean>(false);
 
@@ -28,16 +27,25 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     audio.preload = 'auto';
     audio.volume = 0.75;
 
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
     audio.addEventListener('error', () => {
-      // If MP3 file doesn't exist or errors, smoothly switch to the romantic music-box synth
-      setUseSynthesizer(true);
+      // If MP3 file fails, fallback to gentle synth
+      if (!userPausedRef.current) {
+        startRomanticMelody();
+        setIsPlaying(true);
+      }
     });
 
     audioRef.current = audio;
 
     const attemptPlay = () => {
       if (userPausedRef.current) return;
-      
+
+      audio.muted = false;
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise
@@ -45,8 +53,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
             setIsPlaying(true);
           })
           .catch(() => {
-            // Browser autoplay policy blocked until first user gesture.
-            // Listeners below will activate on the first tap/click.
+            // Browser autoplay policy blocked until first user interaction.
           });
       }
     };
@@ -54,49 +61,65 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
     if (autoPlay) {
       attemptPlay();
 
-      // Listen for the very first interaction anywhere on the document to start music
-      const unlockAudio = () => {
-        if (!userPausedRef.current) {
+      const unlockAudio = (e: Event) => {
+        // Prevent unlocking if the target was the mute button itself
+        const target = e.target as HTMLElement | null;
+        if (target && target.closest('[data-music-toggle="true"]')) {
+          return;
+        }
+
+        if (!userPausedRef.current && audio.paused) {
           attemptPlay();
         }
       };
 
-      window.addEventListener('click', unlockAudio, { once: true });
-      window.addEventListener('touchstart', unlockAudio, { once: true });
-      window.addEventListener('keydown', unlockAudio, { once: true });
+      window.addEventListener('click', unlockAudio, { capture: true });
+      window.addEventListener('touchstart', unlockAudio, { capture: true });
+      window.addEventListener('keydown', unlockAudio, { capture: true });
 
       return () => {
-        window.removeEventListener('click', unlockAudio);
-        window.removeEventListener('touchstart', unlockAudio);
-        window.removeEventListener('keydown', unlockAudio);
+        window.removeEventListener('click', unlockAudio, { capture: true });
+        window.removeEventListener('touchstart', unlockAudio, { capture: true });
+        window.removeEventListener('keydown', unlockAudio, { capture: true });
+        audio.removeEventListener('play', handlePlay);
+        audio.removeEventListener('pause', handlePause);
         audio.pause();
+        audio.muted = true;
         audio.src = '';
         stopRomanticMelody();
       };
     }
 
     return () => {
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
       audio.pause();
+      audio.muted = true;
       audio.src = '';
       stopRomanticMelody();
     };
   }, [musicUrl, autoPlay]);
 
-  const toggleMusic = () => {
-    if (isPlaying) {
+  const toggleMusic = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const currentlyPlaying = isPlaying || (audioRef.current && !audioRef.current.paused);
+
+    if (currentlyPlaying) {
+      // MUTE / PAUSE completely
       userPausedRef.current = true;
-      if (useSynthesizer) {
-        stopRomanticMelody();
-      } else if (audioRef.current) {
+      if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.muted = true;
       }
+      stopRomanticMelody();
       setIsPlaying(false);
     } else {
+      // UNMUTE / RESUME
       userPausedRef.current = false;
-      if (useSynthesizer) {
-        startRomanticMelody();
-        setIsPlaying(true);
-      } else if (audioRef.current) {
+      if (audioRef.current) {
+        audioRef.current.muted = false;
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
           playPromise
@@ -104,12 +127,14 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
               setIsPlaying(true);
             })
             .catch(() => {
-              // If browser blocked or file not found, fallback to synthesized gentle chimes
-              setUseSynthesizer(true);
+              // Fallback to synthesizer if audio fails
               startRomanticMelody();
               setIsPlaying(true);
             });
         }
+      } else {
+        startRomanticMelody();
+        setIsPlaying(true);
       }
     }
   };
@@ -125,6 +150,7 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({
           className="fixed top-4 right-4 z-40"
         >
           <button
+            data-music-toggle="true"
             onClick={toggleMusic}
             type="button"
             aria-label={isPlaying ? 'Pause romantic music' : 'Play romantic music'}
