@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-blush: #fff5f6;
+    --color-rose-soft: #fde8ea;
+    --color-gold-soft: #f5eedc;
+    --color-wine: #7e2237;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #fffcfd;
+    color: #3f393b;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+}
+
+.font-serif-romantic {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-handwriting {
+  font-family: 'Caveat', cursive;
+}
+
+/* Subtle Romantic Paper & Card Effects */
+.romantic-paper-shadow {
+  box-shadow:
+    0 4px 6px -1px rgba(225, 29, 72, 0.04),
+    0 20px 25px -5px rgba(225, 29, 72, 0.07),
+    0 1px 3px 0 rgba(0, 0, 0, 0.03);
+}
+
+.letter-shadow {
+  box-shadow:
+    0 10px 30px -5px rgba(244, 63, 94, 0.12),
+    0 25px 45px -10px rgba(120, 53, 15, 0.08),
+    inset 0 0 40px rgba(254, 242, 242, 0.6);
+}
+
+.gold-wax-seal {
+  background: radial-gradient(circle at 35% 35%, #ffd27d, #d49a37 60%, #996515 100%);
+  box-shadow:
+    0 4px 10px rgba(180, 115, 20, 0.35),
+    inset 0 2px 3px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Envelope 3D styling */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Heart subtle pulse glow */
+@keyframes romantic-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.25));
+  }
+  50% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 22px rgba(244, 63, 94, 0.45));
+  }
+}
+
+.animate-romantic-pulse {
+  animation: romantic-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom Scrollbar for delicate look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #fffafa;
+}
+::-webkit-scrollbar-thumb {
+  background: #fed7aa;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #fca5a5;
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Happy Birthday, My Love",
+  "description": "An elegant, romantic one-page birthday surprise website featuring a heart opening sequence, floating hearts and balloons, and a handwritten letter.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
