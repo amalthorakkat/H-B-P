@@ -1,6 +1,6 @@
 import photo1 from '../assets/pup.jpeg';
 import photo2 from '../assets/IMG-20260626-WA0110.jpg';
-import songUrl from '../assets/new-west-those-eyes-lyrics-dan-music-128k_5g6Y9pt4.mp3';
+import songUrl from '../assets/sajni-re-instrumental-download-link-in-description_kRbyJhdu.mp3';
 
 export const loveStory = {
   myName: "Chocho",
