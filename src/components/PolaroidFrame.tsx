@@ -9,30 +9,15 @@ interface PolaroidFrameProps {
 }
 
 export const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
-  photos = ['/images/her1.jpg', '/images/us1.jpg'],
+  photos = [],
   herName = 'Puppy',
   myName = 'Chocho',
 }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isRealPhoto, setIsRealPhoto] = useState<{ [key: number]: boolean }>({});
+  const [failedIndices, setFailedIndices] = useState<{ [key: number]: boolean }>({});
 
-  const validPhotos = photos && photos.length > 0 ? photos : ['/images/her1.jpg'];
+  const validPhotos = photos && photos.length > 0 ? photos : [];
   const currentPhoto = validPhotos[activeIndex % validPhotos.length];
-
-  // Inspect image to see if it's a real photo or 1x1 dummy placeholder
-  useEffect(() => {
-    const img = new Image();
-    img.src = currentPhoto;
-    img.onload = () => {
-      setIsRealPhoto((prev) => ({
-        ...prev,
-        [activeIndex]: img.naturalWidth > 30 && img.naturalHeight > 30,
-      }));
-    };
-    img.onerror = () => {
-      setIsRealPhoto((prev) => ({ ...prev, [activeIndex]: false }));
-    };
-  }, [currentPhoto, activeIndex]);
 
   const handleNext = (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -67,6 +52,7 @@ export const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
   ];
 
   const currentCaption = captions[activeIndex % captions.length];
+  const hasFailed = failedIndices[activeIndex];
 
   return (
     <div className="relative flex flex-col items-center my-6 md:my-8 select-none">
@@ -90,9 +76,9 @@ export const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
         </div>
 
         {/* Polaroid Physical Body */}
-        <div className="bg-white p-3.5 sm:p-4 pb-6 sm:pb-7 rounded-sm sm:rounded-md shadow-[0_12px_36px_rgba(0,0,0,0.08),0_3px_12px_rgba(244,114,182,0.12)] border border-rose-100/70 w-[275px] sm:w-[315px] transition-all duration-300 group-hover:shadow-[0_18px_45px_rgba(244,114,182,0.22)]">
-          {/* Photo Slot */}
-          <div className="relative aspect-[4/4.8] rounded-xs overflow-hidden bg-gradient-to-tr from-rose-50 via-pink-50 to-stone-50 flex items-center justify-center border border-stone-200/60 shadow-inner">
+        <div className="bg-white p-3.5 sm:p-4 pb-6 sm:pb-7 rounded-sm sm:rounded-md shadow-[0_12px_36px_rgba(0,0,0,0.08),0_3px_12px_rgba(244,114,182,0.12)] border border-rose-100/70 w-[280px] sm:w-[320px] transition-all duration-300 group-hover:shadow-[0_18px_45px_rgba(244,114,182,0.22)]">
+          {/* Photo Slot - Fixed uniform dimensions */}
+          <div className="relative w-full h-[280px] sm:h-[320px] rounded-xs overflow-hidden bg-gradient-to-tr from-rose-50 via-pink-50 to-stone-50 flex items-center justify-center border border-stone-200/60 shadow-inner">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeIndex}
@@ -100,17 +86,20 @@ export const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.35 }}
-                className="w-full h-full"
+                className="absolute inset-0 w-full h-full flex items-center justify-center"
               >
-                {isRealPhoto[activeIndex] ? (
+                {currentPhoto && !hasFailed ? (
                   <img
                     src={currentPhoto}
                     alt={currentCaption.title}
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    onError={() => {
+                      setFailedIndices((prev) => ({ ...prev, [activeIndex]: true }));
+                    }}
+                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                  // Romantic illustrated card before user adds real photo
+                  // Romantic illustrated card fallback
                   <div className="relative w-full h-full p-5 flex flex-col items-center justify-center text-center bg-gradient-to-b from-rose-50/90 via-pink-50/60 to-stone-50">
                     <div className="w-14 h-14 rounded-full bg-white/95 shadow-xs border border-rose-100 flex items-center justify-center mb-2.5 text-rose-400">
                       <Heart className="w-7 h-7 fill-rose-300 stroke-rose-400 animate-pulse" />
@@ -131,7 +120,7 @@ export const PolaroidFrame: React.FC<PolaroidFrameProps> = ({
             </AnimatePresence>
 
             {/* Subtle romantic corner sparkle */}
-            <div className="absolute top-2.5 right-2.5 text-rose-300 pointer-events-none drop-shadow-xs">
+            <div className="absolute top-2.5 right-2.5 text-rose-300 pointer-events-none drop-shadow-xs z-20">
               <Sparkles className="w-4 h-4 fill-rose-200/60" />
             </div>
           </div>
