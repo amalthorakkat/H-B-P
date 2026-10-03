@@ -5,6 +5,7 @@ import { Heart, Sparkles, Star } from 'lucide-react';
 
 interface OpeningScreenProps {
   onOpen: () => void;
+  onStartMusic?: () => void;
 }
 
 interface BurstElement {
@@ -18,7 +19,7 @@ interface BurstElement {
   duration: number;
 }
 
-export const OpeningScreen: React.FC<OpeningScreenProps> = ({ onOpen }) => {
+export const OpeningScreen: React.FC<OpeningScreenProps> = ({ onOpen, onStartMusic }) => {
   const [isOpening, setIsOpening] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [burstElements, setBurstElements] = useState<BurstElement[]>([]);
@@ -45,6 +46,7 @@ export const OpeningScreen: React.FC<OpeningScreenProps> = ({ onOpen }) => {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (isOpening) return;
     setIsOpening(true);
+    onStartMusic?.();
 
     // Trigger delicate pastel confetti burst
     try {

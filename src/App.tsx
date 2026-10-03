@@ -20,12 +20,22 @@ export default function App() {
   // 2. 'birthday'
   // 3. 'letter-opened'
   const [stage, setStage] = useState<'opening' | 'birthday' | 'letter-opened'>('opening');
+  const [isMusicPlaying, setIsMusicPlaying] = useState<boolean>(false);
 
   // Load love story data
   const story = initialStory;
 
+  const handleStartMusic = () => {
+    setIsMusicPlaying(true);
+  };
+
+  const handleToggleMusic = () => {
+    setIsMusicPlaying((prev) => !prev);
+  };
+
   const handleOpenHeart = () => {
     setStage('birthday');
+    setIsMusicPlaying(true);
   };
 
   const handleLetterOpened = () => {
@@ -53,13 +63,22 @@ export default function App() {
       {/* Floating Ambient Atmosphere (Hearts, Balloons, Subtle Warm Glows) */}
       <FloatingAtmosphere stage={stage} />
 
-      {/* Music Player (Plays automatically from the start, button visible only after opening) */}
-      <MusicPlayer musicUrl={story.music} autoPlay={true} visible={stage !== 'opening'} />
+      {/* Music Player (Plays when Open My Heart is clicked, button visible only after opening) */}
+      <MusicPlayer
+        musicUrl={story.music}
+        isPlaying={isMusicPlaying}
+        onToggle={handleToggleMusic}
+        visible={stage !== 'opening'}
+      />
 
       {/* Stage 1: Opening Screen */}
       <AnimatePresence mode="wait">
         {stage === 'opening' && (
-          <OpeningScreen key="opening-screen" onOpen={handleOpenHeart} />
+          <OpeningScreen
+            key="opening-screen"
+            onOpen={handleOpenHeart}
+            onStartMusic={handleStartMusic}
+          />
         )}
       </AnimatePresence>
 
